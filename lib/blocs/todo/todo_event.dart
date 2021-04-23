@@ -20,4 +20,7 @@ class UpdateTodo extends TodoEvent {
   final String name;
 }
 
-class DeleteTodo extends TodoEvent {}
+class DeleteTodo extends TodoEvent {
+  DeleteTodo({@required this.id});
+  final String id;
+}

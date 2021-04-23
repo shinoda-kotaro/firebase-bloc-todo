@@ -9,6 +9,7 @@ import 'package:firebase_bloc_todo/view/screens/loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class TodoScreen extends StatelessWidget {
   const TodoScreen({Key key, this.user}) : super(key: key);
@@ -119,25 +120,37 @@ class TodoList extends HookWidget {
     BuildContext context,
   ) {
     // final context = useContext();
-    return ListTile(
-      onTap: () async {
-        controller.text = todo.name;
-        final result = await showDialog<String>(
-          context: context,
-          builder: (context) => dialog(context, controller, '編集'),
-        );
-        controller.clear();
+    return Slidable(
+      secondaryActions: [
+        IconSlideAction(
+          caption: 'Delete',
+          color: Colors.red,
+          icon: Icons.delete,
+          onTap: () => BlocProvider.of<TodoBloc>(context)
+              .add(DeleteTodo(id: todo.todoId)),
+        ),
+      ],
+      actionPane: const SlidableDrawerActionPane(),
+      child: ListTile(
+        onTap: () async {
+          controller.text = todo.name;
+          final result = await showDialog<String>(
+            context: context,
+            builder: (context) => dialog(context, controller, '編集'),
+          );
+          controller.clear();
 
-        if (result == null) {
-          return null;
-        }
+          if (result == null) {
+            return null;
+          }
 
-        if (result.isNotEmpty && result != todo.name) {
-          BlocProvider.of<TodoBloc>(context)
-              .add(UpdateTodo(todo: todo, name: result));
-        }
-      },
-      title: Text(todo.name),
+          if (result.isNotEmpty && result != todo.name) {
+            BlocProvider.of<TodoBloc>(context)
+                .add(UpdateTodo(todo: todo, name: result));
+          }
+        },
+        title: Text(todo.name),
+      ),
     );
   }
 

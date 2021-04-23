@@ -53,5 +53,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     await todoRepository.updateTodo(firebaseTodo, event.todo.todoId);
   }
 
-  Stream<TodoState> _mapDeleteTodoToState(DeleteTodo event) async* {}
+  Stream<TodoState> _mapDeleteTodoToState(DeleteTodo event) async* {
+    await todoRepository.deleteTodo(event.id);
+  }
 }
