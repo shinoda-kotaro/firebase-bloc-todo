@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_bloc_todo/repositories/user_repository/authentication_error.dart'
-    as auth;
+import 'package:firebase_bloc_todo/repositories/user_repository/authentication_error.dart';
 
 class UserRepository {
   UserRepository({FirebaseAuth firebaseAuth})
@@ -8,23 +7,23 @@ class UserRepository {
 
   final FirebaseAuth _auth;
 
-  Future<auth.FirebaseAuthResultStatus> signIn(
+  Future<FirebaseAuthResultStatus> signIn(
       {String email, String password}) async {
     try {
       final _credential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       if (_credential.user == null) {
-        return auth.FirebaseAuthResultStatus.undefined;
+        return FirebaseAuthResultStatus.undefined;
       } else {
-        return auth.FirebaseAuthResultStatus.successful;
+        return FirebaseAuthResultStatus.successful;
       }
     } on FirebaseAuthException catch (e) {
       print(e);
-      return auth.FirebaseAuthExceptionHandler.handleException(e);
+      return FirebaseAuthExceptionHandler.handleException(e);
     }
   }
 
-  Future<auth.FirebaseAuthResultStatus> signUp(
+  Future<FirebaseAuthResultStatus> signUp(
       {String email, String password, String name}) async {
     try {
       final _credential = await _auth.createUserWithEmailAndPassword(
@@ -32,13 +31,13 @@ class UserRepository {
         password: password,
       );
       if (_credential.user == null) {
-        return auth.FirebaseAuthResultStatus.undefined;
+        return FirebaseAuthResultStatus.undefined;
       } else {
         await _credential.user.updateProfile(displayName: name);
-        return auth.FirebaseAuthResultStatus.successful;
+        return FirebaseAuthResultStatus.successful;
       }
     } on FirebaseAuthException catch (e) {
-      return auth.FirebaseAuthExceptionHandler.handleException(e);
+      return FirebaseAuthExceptionHandler.handleException(e);
     }
   }
 

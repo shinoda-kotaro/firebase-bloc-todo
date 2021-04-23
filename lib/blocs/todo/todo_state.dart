@@ -1,10 +1,16 @@
 import 'package:equatable/equatable.dart';
+import 'package:firebase_bloc_todo/entities/todo.dart';
 
 abstract class TodoState extends Equatable {
   @override
   List<Object> get props => [];
 }
 
-class ObserveTodos extends TodoState {}
+class LoadingTodos extends TodoState {}
 
-class FailureObserveTodos extends TodoState {}
+class ObservingTodos extends TodoState {
+  ObservingTodos(this.todos);
+  final Stream<List<Todo>> todos;
+}
+
+class ObservingTodosFailure extends TodoState {}
