@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:firebase_bloc_todo/entities/todo.dart';
 import 'package:flutter/material.dart';
 
 abstract class TodoEvent extends Equatable {
@@ -13,6 +14,10 @@ class AddTodo extends TodoEvent {
   final String name;
 }
 
-class UpdateTodo extends TodoEvent {}
+class UpdateTodo extends TodoEvent {
+  UpdateTodo({@required this.todo, @required this.name});
+  final Todo todo;
+  final String name;
+}
 
 class DeleteTodo extends TodoEvent {}

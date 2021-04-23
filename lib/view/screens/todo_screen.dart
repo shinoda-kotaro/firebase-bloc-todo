@@ -69,7 +69,12 @@ class TodoList extends HookWidget {
                   return ListView.builder(
                     itemCount: todos.data.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return _listItem(index, todos.data[index]);
+                      return _listItem(
+                        index,
+                        todos.data[index],
+                        _textController,
+                        context,
+                      );
                     },
                   );
                 } else {
@@ -90,9 +95,14 @@ class TodoList extends HookWidget {
         onPressed: () async {
           final result = await showDialog<String>(
             context: context,
-            builder: (context) => addDialog(context, _textController),
+            builder: (context) => dialog(context, _textController, '新規作成'),
           );
           _textController.clear();
+
+          if (result == null) {
+            return null;
+          }
+
           if (result.isNotEmpty) {
             BlocProvider.of<TodoBloc>(context).add(AddTodo(name: result));
           }
@@ -102,16 +112,42 @@ class TodoList extends HookWidget {
     );
   }
 
-  Widget _listItem(int index, Todo todo) {
+  Widget _listItem(
+    int index,
+    Todo todo,
+    TextEditingController controller,
+    BuildContext context,
+  ) {
+    // final context = useContext();
     return ListTile(
+      onTap: () async {
+        controller.text = todo.name;
+        final result = await showDialog<String>(
+          context: context,
+          builder: (context) => dialog(context, controller, '編集'),
+        );
+        controller.clear();
+
+        if (result == null) {
+          return null;
+        }
+
+        if (result.isNotEmpty && result != todo.name) {
+          BlocProvider.of<TodoBloc>(context)
+              .add(UpdateTodo(todo: todo, name: result));
+        }
+      },
       title: Text(todo.name),
     );
   }
 
-  AlertDialog addDialog(
-      BuildContext context, TextEditingController controller) {
+  AlertDialog dialog(
+    BuildContext context,
+    TextEditingController controller,
+    String title,
+  ) {
     return AlertDialog(
-      title: const Text('新規作成'),
+      title: Text(title),
       content: Row(
         children: [
           Expanded(
@@ -129,7 +165,7 @@ class TodoList extends HookWidget {
         ),
         FlatButton(
           onPressed: () => Navigator.pop(context, controller.text),
-          child: const Text('作成'),
+          child: const Text('OK'),
         ),
       ],
     );
