@@ -1,10 +1,10 @@
 import 'package:firebase_bloc_todo/blocs/authentication/authentication_bloc.dart';
 import 'package:firebase_bloc_todo/blocs/authentication/authentication_event.dart';
 import 'package:firebase_bloc_todo/blocs/authentication/authentication_state.dart';
-import 'package:firebase_bloc_todo/screens/login.dart';
 import 'package:firebase_bloc_todo/repositories/user_repository/user_repository.dart';
-import 'package:firebase_bloc_todo/screens/loading.dart';
-import 'package:firebase_bloc_todo/screens/todo_screen.dart';
+import 'package:firebase_bloc_todo/view/screens/loading.dart';
+import 'package:firebase_bloc_todo/view/screens/login.dart';
+import 'package:firebase_bloc_todo/view/screens/todo_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,11 +38,9 @@ class MyApp extends StatelessWidget {
         builder: (context, state) {
           if (state is AuthenticationInitial) {
             return const LoadingScreen();
-          }
-          if (state is AuthenticationSuccess) {
+          } else if (state is AuthenticationSuccess) {
             return TodoScreen(user: state.user);
-          }
-          if (state is AuthenticationFailure) {
+          } else if (state is AuthenticationFailure) {
             return LoginScreen(userRepository: userRepository);
           }
         },

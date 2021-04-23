@@ -5,7 +5,7 @@ import 'package:firebase_bloc_todo/blocs/signin/signIn_bloc.dart';
 import 'package:firebase_bloc_todo/blocs/signin/signin_event.dart';
 import 'package:firebase_bloc_todo/blocs/signin/signin_state.dart';
 import 'package:firebase_bloc_todo/repositories/user_repository/user_repository.dart';
-import 'package:firebase_bloc_todo/screens/signup.dart';
+import 'package:firebase_bloc_todo/view/screens/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
