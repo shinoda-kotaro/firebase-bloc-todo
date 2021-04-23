@@ -10,14 +10,26 @@ class TodoRepository {
   }
 
   Future<void> addTodo(Map<String, dynamic> todo) async {
-    await _db.collection('todo').add(todo);
+    try {
+      await _db.collection('todo').add(todo);
+    } on FirebaseException catch (e) {
+      print(e);
+    }
   }
 
   Future<void> updateTodo(Map<String, dynamic> todo, String id) async {
-    await _db.collection('todo').doc(id).update(todo);
+    try {
+      await _db.collection('todo').doc(id).update(todo);
+    } on FirebaseException catch (e) {
+      print(e);
+    }
   }
 
   Future<void> deleteTodo(String id) async {
-    await _db.collection('todo').doc(id).delete();
+    try {
+      await _db.collection('todo').doc(id).delete();
+    } on FirebaseException catch (e) {
+      print(e);
+    }
   }
 }
