@@ -2,8 +2,8 @@ import 'package:firebase_bloc_todo/blocs/authentication/authentication_bloc.dart
 import 'package:firebase_bloc_todo/blocs/authentication/authentication_event.dart';
 import 'package:firebase_bloc_todo/blocs/authentication/authentication_state.dart';
 import 'package:firebase_bloc_todo/repositories/user_repository/user_repository.dart';
-import 'package:firebase_bloc_todo/view/screens/loading.dart';
-import 'package:firebase_bloc_todo/view/screens/login.dart';
+import 'package:firebase_bloc_todo/view/screens/loading_screen.dart';
+import 'package:firebase_bloc_todo/view/screens/login_screen.dart';
 import 'package:firebase_bloc_todo/view/screens/todo_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
