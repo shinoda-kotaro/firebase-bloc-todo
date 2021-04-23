@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-class SignupScreen extends HookWidget {
+class SignupScreen extends StatelessWidget {
   const SignupScreen({Key key, @required this.userRepository})
       : super(key: key);
 
@@ -24,7 +24,7 @@ class SignupScreen extends HookWidget {
   }
 }
 
-class SignupForm extends HookWidget {
+class SignupForm extends StatelessWidget {
   const SignupForm({Key key, @required this.userRepository}) : super(key: key);
 
   final UserRepository userRepository;
