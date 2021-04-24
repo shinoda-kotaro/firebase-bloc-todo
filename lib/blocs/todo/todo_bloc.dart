@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:firebase_bloc_todo/blocs/todo/todo_event.dart';
 import 'package:firebase_bloc_todo/blocs/todo/todo_state.dart';
+import 'package:firebase_bloc_todo/repositories/todo_repository/todo_error.dart';
 import 'package:firebase_bloc_todo/repositories/todo_repository/todo_repository.dart';
 import 'package:firebase_bloc_todo/repositories/user_repository/user_repository.dart';
 
@@ -41,15 +42,24 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   }
 
   Stream<TodoState> _mapAddTodoToState(AddTodo event) async* {
-    todoRepository.addTodo(event.name);
+    final result = await todoRepository.addTodo(event.name);
+    if (result == TodoFetchStatus.failure) {
+      yield NotLoadedTodos();
+    }
   }
 
   Stream<TodoState> _mapUpdateTodoToState(UpdateTodo event) async* {
-    await todoRepository.updateTodo(event.name, event.todo);
+    final result = await todoRepository.updateTodo(event.name, event.todo);
+    if (result == TodoFetchStatus.failure) {
+      yield NotLoadedTodos();
+    }
   }
 
   Stream<TodoState> _mapDeleteTodoToState(DeleteTodo event) async* {
-    await todoRepository.deleteTodo(event.id);
+    final result = await todoRepository.deleteTodo(event.id);
+    if (result == TodoFetchStatus.failure) {
+      yield NotLoadedTodos();
+    }
   }
 
   @override

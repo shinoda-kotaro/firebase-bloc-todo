@@ -73,11 +73,25 @@ class TodoList extends HookWidget {
               },
             );
           } else if (state is NotLoadedTodos) {
-            return const Center(child: Text('エラーが発生しました'));
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('エラーが発生しました'),
+                  ElevatedButton(
+                    child: const Text('リトライ'),
+                    onPressed: () => context.read<TodoBloc>().add(LoadTodos()),
+                    style: ElevatedButton.styleFrom(
+                      shape: const StadiumBorder(),
+                      primary: Theme.of(context).accentColor,
+                      onPrimary: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            );
           } else if (state is LoadingTodos) {
             return const LoadingScreen();
-          } else {
-            return Center(child: Text(state.toString()));
           }
         },
       ),
