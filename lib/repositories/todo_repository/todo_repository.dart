@@ -9,17 +9,44 @@ class TodoRepository {
         (snapshot) => snapshot.docs.map((doc) => Todo.fromDoc(doc)).toList());
   }
 
-  Future<void> addTodo(Map<String, dynamic> todo) async {
-    try {
-      await _db.collection('todo').add(todo);
-    } on FirebaseException catch (e) {
-      print(e);
-    }
+  void addTodo(String name) {
+    print('adding?');
+    // try {
+    //   print('repository adding');
+    //   final now = DateTime.now();
+    //   final todo = Todo(
+    //     todoId: '',
+    //     name: name,
+    //     createdAt: Timestamp.fromDate(now),
+    //     updatedAt: Timestamp.fromDate(now),
+    //   );
+    //   final firebaseTodo = Todo.toMap(todo);
+    //   _db.collection('todo').add(firebaseTodo);
+    // } on FirebaseException catch (e) {
+    //   print(e);
+    // }
+    final now = DateTime.now();
+    final todo = Todo(
+      todoId: '',
+      name: name,
+      createdAt: Timestamp.fromDate(now),
+      updatedAt: Timestamp.fromDate(now),
+    );
+    final firebaseTodo = Todo.toMap(todo);
+    _db.collection('todo').add(firebaseTodo).catchError(print);
   }
 
-  Future<void> updateTodo(Map<String, dynamic> todo, String id) async {
+  Future<void> updateTodo(String name, Todo oldTodo) async {
     try {
-      await _db.collection('todo').doc(id).update(todo);
+      final now = DateTime.now();
+      final todo = Todo(
+        todoId: oldTodo.todoId,
+        name: name,
+        createdAt: oldTodo.createdAt,
+        updatedAt: Timestamp.fromDate(now),
+      );
+      final firebaseTodo = Todo.toMap(todo);
+      await _db.collection('todo').doc(oldTodo.todoId).update(firebaseTodo);
     } on FirebaseException catch (e) {
       print(e);
     }

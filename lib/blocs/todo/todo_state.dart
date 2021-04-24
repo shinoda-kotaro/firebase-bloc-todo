@@ -8,9 +8,12 @@ abstract class TodoState extends Equatable {
 
 class LoadingTodos extends TodoState {}
 
-class ObservingTodos extends TodoState {
-  ObservingTodos(this.todos);
-  final Stream<List<Todo>> todos;
+class LoadedTodos extends TodoState {
+  LoadedTodos(this.todos);
+  final List<Todo> todos;
+
+  @override
+  List<Object> get props => [todos];
 }
 
-class ObservingTodosFailure extends TodoState {}
+class NotLoadedTodos extends TodoState {}

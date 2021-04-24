@@ -1,8 +1,8 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_bloc_todo/blocs/todo/todo_event.dart';
 import 'package:firebase_bloc_todo/blocs/todo/todo_state.dart';
-import 'package:firebase_bloc_todo/entities/todo.dart';
 import 'package:firebase_bloc_todo/repositories/todo_repository/todo_repository.dart';
 import 'package:firebase_bloc_todo/repositories/user_repository/user_repository.dart';
 
@@ -12,10 +12,14 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   final todoRepository = TodoRepository();
   final userRepository = UserRepository();
 
+  StreamSubscription subscription;
+
   @override
   Stream<TodoState> mapEventToState(TodoEvent event) async* {
-    if (event is ObserveTodos) {
-      yield* _mapObserveTodosToState(event);
+    if (event is LoadTodos) {
+      yield* _mapLoadTodosToState(event);
+    } else if (event is TodosUpdated) {
+      yield* _mapTodosUpdatedToState(event);
     } else if (event is AddTodo) {
       yield* _mapAddTodoToState(event);
     } else if (event is UpdateTodo) {
@@ -25,35 +29,32 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     }
   }
 
-  Stream<TodoState> _mapObserveTodosToState(ObserveTodos event) async* {
-    yield ObservingTodos(todoRepository.observeTodos());
+  Stream<TodoState> _mapLoadTodosToState(LoadTodos event) async* {
+    await subscription?.cancel();
+    subscription = todoRepository
+        .observeTodos()
+        .listen((todos) => add(TodosUpdated(todos)));
+  }
+
+  Stream<TodoState> _mapTodosUpdatedToState(TodosUpdated event) async* {
+    yield LoadedTodos(event.todos);
   }
 
   Stream<TodoState> _mapAddTodoToState(AddTodo event) async* {
-    final now = DateTime.now();
-    final todo = Todo(
-      todoId: '',
-      name: event.name,
-      createdAt: Timestamp.fromDate(now),
-      updatedAt: Timestamp.fromDate(now),
-    );
-    final firebaseTodo = Todo.toMap(todo);
-    await todoRepository.addTodo(firebaseTodo);
+    todoRepository.addTodo(event.name);
   }
 
   Stream<TodoState> _mapUpdateTodoToState(UpdateTodo event) async* {
-    final now = DateTime.now();
-    final todo = Todo(
-      todoId: '',
-      name: event.name,
-      createdAt: event.todo.createdAt,
-      updatedAt: Timestamp.fromDate(now),
-    );
-    final firebaseTodo = Todo.toMap(todo);
-    await todoRepository.updateTodo(firebaseTodo, event.todo.todoId);
+    await todoRepository.updateTodo(event.name, event.todo);
   }
 
   Stream<TodoState> _mapDeleteTodoToState(DeleteTodo event) async* {
     await todoRepository.deleteTodo(event.id);
+  }
+
+  @override
+  Future<void> close() {
+    subscription.cancel();
+    return super.close();
   }
 }

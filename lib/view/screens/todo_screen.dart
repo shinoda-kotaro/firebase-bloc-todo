@@ -21,7 +21,7 @@ class TodoScreen extends StatelessWidget {
     print('TodoScreen');
 
     return BlocProvider<TodoBloc>(
-      create: (_) => TodoBloc()..add(ObserveTodos()),
+      create: (_) => TodoBloc()..add(LoadTodos()),
       child: const TodoList(),
     );
   }
@@ -36,6 +36,10 @@ class TodoList extends HookWidget {
 
     final _textController =
         useTextEditingController.fromValue(TextEditingValue.empty);
+
+    useEffect(() {
+      return context.read<TodoBloc>().close;
+    }, []);
 
     return Scaffold(
       appBar: AppBar(
@@ -56,34 +60,19 @@ class TodoList extends HookWidget {
       body: BlocBuilder<TodoBloc, TodoState>(
         // ignore: missing_return
         builder: (context, state) {
-          if (state is ObservingTodos) {
-            return StreamBuilder(
-              stream: state.todos,
-              builder: (BuildContext context, AsyncSnapshot<List<Todo>> todos) {
-                if (todos.connectionState == ConnectionState.waiting) {
-                  return const LoadingScreen();
-                }
-                if (todos.hasError) {
-                  return Center(child: Text('エラーが発生しました: ${todos.error}'));
-                }
-                if (todos.hasData) {
-                  return ListView.builder(
-                    itemCount: todos.data.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return _listItem(
-                        index,
-                        todos.data[index],
-                        _textController,
-                        context,
-                      );
-                    },
-                  );
-                } else {
-                  return const Center(child: Text('データが見つかりませんでした'));
-                }
+          if (state is LoadedTodos) {
+            return ListView.builder(
+              itemCount: state.todos.length,
+              itemBuilder: (BuildContext context, int index) {
+                return _listItem(
+                  index,
+                  state.todos[index],
+                  _textController,
+                  context,
+                );
               },
             );
-          } else if (state is ObservingTodosFailure) {
+          } else if (state is NotLoadedTodos) {
             return const Center(child: Text('エラーが発生しました'));
           } else if (state is LoadingTodos) {
             return const LoadingScreen();
@@ -105,7 +94,7 @@ class TodoList extends HookWidget {
           }
 
           if (result.isNotEmpty) {
-            BlocProvider.of<TodoBloc>(context).add(AddTodo(name: result));
+            context.read<TodoBloc>().add(AddTodo(name: result));
           }
         },
         child: const Icon(Icons.add),
@@ -119,7 +108,6 @@ class TodoList extends HookWidget {
     TextEditingController controller,
     BuildContext context,
   ) {
-    // final context = useContext();
     return Slidable(
       secondaryActions: [
         IconSlideAction(
@@ -145,8 +133,7 @@ class TodoList extends HookWidget {
           }
 
           if (result.isNotEmpty && result != todo.name) {
-            BlocProvider.of<TodoBloc>(context)
-                .add(UpdateTodo(todo: todo, name: result));
+            context.read<TodoBloc>().add(UpdateTodo(todo: todo, name: result));
           }
         },
         title: Text(todo.name),
